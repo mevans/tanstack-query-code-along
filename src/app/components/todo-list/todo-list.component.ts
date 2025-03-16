@@ -16,6 +16,7 @@ import { RouterLink } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TodoListComponent {
+  // TODO - Query the todos
   todos: Todo[] = [
     { id: 1, title: 'Buy milk', completed: false },
     { id: 2, title: 'Buy eggs', completed: true },
@@ -33,5 +34,17 @@ export class TodoListComponent {
     }
 
     const { title } = this.newTodoForm.value;
+
+    // TODO - Mutate and add a new todo
+  }
+
+  onDelete(id: Todo['id']): void {
+    // TODO - Mutate and delete the todo
+  }
+
+  onToggle(id: Todo['id'], $event: Event): void {
+    const checked = ($event.target as HTMLInputElement).checked;
+
+    // TODO - Mutate and toggle the todo
   }
 }

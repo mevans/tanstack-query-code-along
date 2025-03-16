@@ -26,7 +26,6 @@
 }
 
 .todo-list__item-title {
-  font-size: 1.2rem;
   flex: 1;
   text-decoration: none;
 

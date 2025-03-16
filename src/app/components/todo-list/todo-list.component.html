@@ -1,9 +1,9 @@
-<h2>Todos</h2>
+<h1>Todos</h1>
 
 <ul class="todo-list">
   @for (todo of todos; track todo) {
     <li class="todo-list__item">
-      <button type="button">×</button>
+      <button type="button" (click)="onDelete(todo.id)">×</button>
       <a
         class="todo-list__item-title"
         [class.completed]="todo.completed"
@@ -11,7 +11,11 @@
       >
         {{ todo.title }}
       </a>
-      <input type="checkbox" [checked]="todo.completed" />
+      <input
+        type="checkbox"
+        [checked]="todo.completed"
+        (change)="onToggle(todo.id, $event)"
+      />
     </li>
   }
 </ul>

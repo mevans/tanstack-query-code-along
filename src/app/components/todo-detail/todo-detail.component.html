@@ -1,1 +1,8 @@
-<p>todo-detail works!</p>
+<h1 class="todo-detail__title">
+  Todo name
+  <input type="checkbox" (change)="onToggle($event)" />
+</h1>
+
+<p>Todo description</p>
+
+<button type="button" (click)="onDelete()">Delete</button>
