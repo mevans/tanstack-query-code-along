@@ -1,0 +1,10 @@
+:host {
+  display: block;
+  margin: 2rem auto;
+  width: clamp(320px, 80%, 800px);
+  background-color: white;
+  min-height: 80vh;
+  overflow: hidden;
+  padding: 2rem;
+  border-radius: 1rem;
+}

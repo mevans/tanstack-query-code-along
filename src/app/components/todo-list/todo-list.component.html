@@ -1,1 +1,30 @@
-<p>todo-list works!</p>
+<h2>Todos</h2>
+
+<ul class="todo-list">
+  @for (todo of todos; track todo) {
+    <li class="todo-list__item">
+      <button type="button">×</button>
+      <a
+        class="todo-list__item-title"
+        [class.completed]="todo.completed"
+        [routerLink]="['/todos', todo.id]"
+      >
+        {{ todo.title }}
+      </a>
+      <input type="checkbox" [checked]="todo.completed" />
+    </li>
+  }
+</ul>
+
+<form
+  class="todo-form"
+  [formGroup]="newTodoForm"
+  (ngSubmit)="onSubmitNewTodo()"
+>
+  <input
+    type="text"
+    placeholder="What needs to be done?"
+    [formControl]="newTodoForm.controls.title"
+  />
+  <button>Add</button>
+</form>
