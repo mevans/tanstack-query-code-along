@@ -36,6 +36,17 @@ export class TodoApiService {
     return this.simulateApiCall(newTodo);
   }
 
+  deleteTodoById(id: Todo['id']): Observable<null> {
+    const todo = this.todos().find((todo) => todo.id === id);
+    if (!todo) {
+      return throwError(() => new Error(`Todo with id ${id} not found`));
+    }
+
+    this.todos.update((todos) => todos.filter((todo) => todo.id !== id));
+
+    return this.simulateApiCall(null);
+  }
+
   private seedTodos(): void {
     this.todos.set([
       { id: 1, title: 'Buy milk', completed: false },
