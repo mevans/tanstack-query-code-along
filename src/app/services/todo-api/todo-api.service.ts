@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { CreateTodoPayload, Todo } from '../../types/todo.type';
-import { delay, Observable, of, throwError } from 'rxjs';
+import { delay, Observable, of, switchMap, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -60,6 +60,16 @@ export class TodoApiService {
   ): Observable<TReturn> {
     // Random delay between 500ms and 1500ms
     const randomDelay = Math.floor(Math.random() * 1000) + 500;
-    return of(returnValue).pipe(delay(randomDelay));
+    return of(returnValue).pipe(
+      delay(randomDelay),
+      switchMap((result) => {
+        const shouldFail = Math.random() < 0.1;
+        if (shouldFail) {
+          return throwError(() => new Error('API call failed'));
+        }
+
+        return of(result);
+      }),
+    );
   }
 }
