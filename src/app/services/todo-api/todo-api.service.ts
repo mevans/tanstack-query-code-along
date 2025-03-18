@@ -1,15 +1,22 @@
-import { Injectable, signal } from '@angular/core';
+import { effect, Injectable, signal } from '@angular/core';
 import { CreateTodoPayload, SlimTodo, Todo } from '../../types/todo.type';
 import { delay, Observable, of, switchMap, throwError } from 'rxjs';
+import { mockTodos } from '../../constants/mock-todos.constant';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TodoApiService {
+  private readonly storageKey = 'todos';
+
   private todos = signal<Todo[]>([]);
 
+  #syncTodosToLocalStorage = effect(() => {
+    localStorage.setItem(this.storageKey, JSON.stringify(this.todos()));
+  });
+
   constructor() {
-    this.seedTodos();
+    this.seedTodosFromLocalStorage();
   }
 
   getTodos(): Observable<SlimTodo[]> {
@@ -84,27 +91,20 @@ export class TodoApiService {
     return this.simulateApiCall(updatedTodo);
   }
 
-  private seedTodos(): void {
-    this.todos.set([
-      {
-        id: '1',
-        title: 'Buy milk',
-        completed: false,
-        description: 'Need to buy milk from the store',
-      },
-      {
-        id: '2',
-        title: 'Buy eggs',
-        completed: true,
-        description: 'Need to buy eggs from the store',
-      },
-      {
-        id: '3',
-        title: 'Buy bread',
-        completed: false,
-        description: 'Need to buy bread from the store',
-      },
-    ]);
+  private seedTodosFromLocalStorage(): void {
+    const todosString = localStorage.getItem(this.storageKey);
+
+    if (!todosString) {
+      return this.todos.set(mockTodos);
+    }
+
+    try {
+      const todos = JSON.parse(todosString);
+      this.todos.set(todos);
+    } catch (error) {
+      console.error('Failed to parse todos from local storage', error);
+      this.todos.set(mockTodos);
+    }
   }
 
   private simulateApiCall<TReturn = null>(
