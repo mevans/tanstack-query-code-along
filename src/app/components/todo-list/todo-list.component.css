@@ -1,3 +1,19 @@
+:host {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media screen and (max-width: 768px) {
+  :host {
+    grid-template-columns: 1fr;
+  }
+}
+
+.todo-list__header {
+  grid-column: 1/-1;
+}
+
 .todo-list {
   padding: 0;
 }
@@ -36,12 +52,21 @@
 
 .todo-form {
   display: flex;
+  flex-direction: column;
   gap: 1rem;
-  padding: 1rem;
-  margin-top: 4rem;
+  font-size: 14px;
+}
 
-  input {
-    flex: 1;
-    padding: 0.5rem;
-  }
+.todo-form__title {
+  padding: 0.5rem;
+}
+
+.todo-form__description {
+  flex: 1;
+  padding: 0.5rem;
+}
+
+.todo-form__submit {
+  margin-inline-start: auto;
+  width: auto;
 }

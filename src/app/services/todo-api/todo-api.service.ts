@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { CreateTodoPayload, Todo } from '../../types/todo.type';
+import { CreateTodoPayload, SlimTodo, Todo } from '../../types/todo.type';
 import { delay, Observable, of, switchMap, throwError } from 'rxjs';
 
 @Injectable({
@@ -12,7 +12,7 @@ export class TodoApiService {
     this.seedTodos();
   }
 
-  getTodos(): Observable<Todo[]> {
+  getTodos(): Observable<SlimTodo[]> {
     return this.simulateApiCall(this.todos());
   }
 
@@ -30,6 +30,7 @@ export class TodoApiService {
       id: this.todos().length + 1,
       title: payload.title,
       completed: false,
+      description: payload.description,
     };
 
     this.todos.update((todos) => [...todos, newTodo]);
@@ -47,11 +48,62 @@ export class TodoApiService {
     return this.simulateApiCall(null);
   }
 
+  markTodoAsCompleted(id: Todo['id']): Observable<Todo> {
+    const todo = this.todos().find((todo) => todo.id === id);
+    if (!todo) {
+      return throwError(() => new Error(`Todo with id ${id} not found`));
+    }
+
+    const updatedTodo = {
+      ...todo,
+      completed: true,
+    };
+
+    this.todos.update((todos) =>
+      todos.map((todo) => (todo.id === id ? updatedTodo : todo)),
+    );
+
+    return this.simulateApiCall(updatedTodo);
+  }
+
+  markTodoAsIncomplete(id: Todo['id']): Observable<Todo> {
+    const todo = this.todos().find((todo) => todo.id === id);
+    if (!todo) {
+      return throwError(() => new Error(`Todo with id ${id} not found`));
+    }
+
+    const updatedTodo = {
+      ...todo,
+      completed: false,
+    };
+
+    this.todos.update((todos) =>
+      todos.map((todo) => (todo.id === id ? updatedTodo : todo)),
+    );
+
+    return this.simulateApiCall(updatedTodo);
+  }
+
   private seedTodos(): void {
     this.todos.set([
-      { id: 1, title: 'Buy milk', completed: false },
-      { id: 2, title: 'Buy eggs', completed: true },
-      { id: 3, title: 'Buy bread', completed: false },
+      {
+        id: 1,
+        title: 'Buy milk',
+        completed: false,
+        description: 'Need to buy milk from the store',
+      },
+      {
+        id: 2,
+        title: 'Buy eggs',
+        completed: true,
+        description: 'Need to buy eggs from the store',
+      },
+      {
+        id: 3,
+        title: 'Buy bread',
+        completed: false,
+        description: 'Need to buy bread from the store',
+      },
     ]);
   }
 

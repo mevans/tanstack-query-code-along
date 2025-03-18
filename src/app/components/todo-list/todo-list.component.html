@@ -1,9 +1,8 @@
-<h1>Todos</h1>
+<h1 class="todo-list__header">Todos</h1>
 
 <ul class="todo-list">
   @for (todo of todos; track todo) {
     <li class="todo-list__item">
-      <button type="button" (click)="onDelete(todo.id)">×</button>
       <a
         class="todo-list__item-title"
         [class.completed]="todo.completed"
@@ -11,6 +10,7 @@
       >
         {{ todo.title }}
       </a>
+
       <input
         type="checkbox"
         [checked]="todo.completed"
@@ -25,10 +25,19 @@
   [formGroup]="newTodoForm"
   (ngSubmit)="onSubmitNewTodo()"
 >
+  <h2>Add new</h2>
   <input
     type="text"
     placeholder="What needs to be done?"
+    class="todo-form__title"
     [formControl]="newTodoForm.controls.title"
   />
-  <button>Add</button>
+
+  <textarea
+    placeholder="Description"
+    class="todo-form__description"
+    [formControl]="newTodoForm.controls.description"
+  ></textarea>
+
+  <button class="todo-form__submit">Add</button>
 </form>

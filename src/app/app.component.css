@@ -8,3 +8,12 @@
   padding: 2rem;
   border-radius: 1rem;
 }
+
+@media (max-width: 600px) {
+  :host {
+    margin: 0;
+    padding: 2rem;
+    border-radius: 0;
+    width: 100%;
+  }
+}
