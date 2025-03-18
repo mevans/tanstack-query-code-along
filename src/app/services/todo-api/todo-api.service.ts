@@ -34,13 +34,14 @@ export class TodoApiService {
 
   createTodo(payload: CreateTodoPayload): Observable<Todo> {
     const newTodo: Todo = {
-      id: `${Date.now()}`,
+      id: this.generateTodoId(),
       title: payload.title,
       completed: false,
       description: payload.description,
     };
 
     this.todos.update((todos) => [...todos, newTodo]);
+
     return this.simulateApiCall(newTodo);
   }
 
@@ -123,5 +124,15 @@ export class TodoApiService {
         return of(result);
       }),
     );
+  }
+
+  private generateTodoId(): Todo['id'] {
+    const existingIds = this.todos().map((todo) => parseInt(todo.id, 10));
+    if (!existingIds.length) {
+      return '1';
+    }
+
+    const maxId = Math.max(...existingIds);
+    return `${maxId + 1}`;
   }
 }

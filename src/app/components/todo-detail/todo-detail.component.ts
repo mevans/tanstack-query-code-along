@@ -5,8 +5,8 @@ import {
   input,
   numberAttribute,
 } from '@angular/core';
-import { Todo } from '../../types/todo.type';
-import { injectQuery } from '@tanstack/angular-query-experimental';
+import { SlimTodo, Todo } from '../../types/todo.type';
+import { injectQuery, QueryClient } from '@tanstack/angular-query-experimental';
 import { TodoApiService } from '../../services/todo-api/todo-api.service';
 import { lastValueFrom } from 'rxjs';
 
@@ -19,12 +19,26 @@ import { lastValueFrom } from 'rxjs';
 })
 export class TodoDetailComponent {
   private readonly apiService = inject(TodoApiService);
+  private readonly queryClient = inject(QueryClient);
 
   id = input.required<Todo['id']>();
 
   todoQuery = injectQuery(() => ({
     queryKey: ['todo', this.id()],
     queryFn: () => lastValueFrom(this.apiService.getTodoById(this.id())),
+    placeholderData: () => {
+      const slimTodos = this.queryClient.getQueryData<SlimTodo[]>(['todos']);
+      const matchingTodo = slimTodos?.find((todo) => todo.id === this.id());
+
+      if (!matchingTodo) {
+        return undefined;
+      }
+
+      return {
+        ...matchingTodo,
+        description: '',
+      };
+    },
   }));
 
   onDelete(): void {

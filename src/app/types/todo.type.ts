@@ -6,5 +6,9 @@ export type Todo = {
 };
 
 export type CreateTodoPayload = Pick<Todo, 'title' | 'description'>;
+export type UpdateTodoPayload = Pick<
+  Todo,
+  'title' | 'description' | 'completed'
+>;
 
 export type SlimTodo = Pick<Todo, 'id' | 'title' | 'completed'>;
