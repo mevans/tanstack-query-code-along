@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { Todo } from '../../types/todo.type';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { CreateTodoPayload, Todo } from '../../types/todo.type';
 import {
   FormControl,
   FormGroup,
@@ -7,6 +7,13 @@ import {
   Validators,
 } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import {
+  injectMutation,
+  injectQuery,
+  QueryClient,
+} from '@tanstack/angular-query-experimental';
+import { lastValueFrom } from 'rxjs';
+import { TodoApiService } from '../../services/todo-api/todo-api.service';
 
 @Component({
   selector: 'app-todo-list',
@@ -16,27 +23,23 @@ import { RouterLink } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TodoListComponent {
-  // TODO - Query the todos
-  todos = signal([
-    {
-      id: '1',
-      title: 'Buy milk',
-      completed: false,
-      description: 'Need to buy milk from the store',
-    },
-    {
-      id: '2',
-      title: 'Buy eggs',
-      completed: true,
-      description: 'Need to buy eggs from the store',
-    },
-    {
-      id: '3',
-      title: 'Buy bread',
-      completed: false,
-      description: 'Need to buy bread from the store',
-    },
-  ]);
+  private readonly apiService = inject(TodoApiService);
+  private readonly queryClient = inject(QueryClient);
+
+  todosQuery = injectQuery(() => ({
+    queryKey: ['todos'],
+    queryFn: () => lastValueFrom(this.apiService.getTodos()),
+  }));
+
+  createTodoMutation = injectMutation(() => ({
+    mutationFn: (payload: CreateTodoPayload) =>
+      lastValueFrom(this.apiService.createTodo(payload)),
+    onSuccess: (todo) =>
+      this.queryClient.setQueryData(['todos'], (todos: Todo[]) => [
+        ...todos,
+        todo,
+      ]),
+  }));
 
   newTodoForm = new FormGroup({
     title: new FormControl('', Validators.required),
@@ -50,8 +53,14 @@ export class TodoListComponent {
 
     const { title, description } = this.newTodoForm.value;
 
-    // TODO - Mutate and add a new todo
-    console.log('New todo:', { title, description });
+    if (!title || !description) {
+      return;
+    }
+
+    this.createTodoMutation.mutate({
+      description,
+      title,
+    });
   }
 
   onToggle(id: Todo['id'], $event: Event): void {

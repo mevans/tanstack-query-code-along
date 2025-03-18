@@ -1,24 +1,31 @@
 <h1 class="todo-list__header">Todos</h1>
 
-<ul class="todo-list">
-  @for (todo of todos(); track todo.id) {
-    <li class="todo-list__item">
-      <a
-        class="todo-list__item-title"
-        [class.completed]="todo.completed"
-        [routerLink]="['/todos', todo.id]"
-      >
-        {{ todo.title }}
-      </a>
-
-      <input
-        type="checkbox"
-        [checked]="todo.completed"
-        (change)="onToggle(todo.id, $event)"
-      />
-    </li>
+@switch (todosQuery.status()) {
+  @case ("pending") {
+    <p>Loading...</p>
   }
-</ul>
+  @case ("success") {
+    <ul class="todo-list">
+      @for (todo of todosQuery.data(); track todo.id) {
+        <li class="todo-list__item">
+          <a
+            class="todo-list__item-title"
+            [class.completed]="todo.completed"
+            [routerLink]="['/todos', todo.id]"
+          >
+            {{ todo.title }}
+          </a>
+
+          <input
+            type="checkbox"
+            [checked]="todo.completed"
+            (change)="onToggle(todo.id, $event)"
+          />
+        </li>
+      }
+    </ul>
+  }
+}
 
 <form
   class="todo-form"
@@ -39,5 +46,5 @@
     [formControl]="newTodoForm.controls.description"
   ></textarea>
 
-  <button class="todo-form__submit">Add</button>
+  <button class="todo-form__submit" type="submit">Add</button>
 </form>
