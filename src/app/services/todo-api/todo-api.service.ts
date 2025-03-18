@@ -41,6 +41,7 @@ export class TodoApiService {
     };
 
     this.todos.update((todos) => [...todos, newTodo]);
+
     return this.simulateApiCall(newTodo);
   }
 

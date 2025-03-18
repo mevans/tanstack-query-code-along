@@ -62,8 +62,8 @@
 }
 
 .todo-form__description {
-  flex: 1;
   padding: 0.5rem;
+  height: 150px;
 }
 
 .todo-form__submit {
