@@ -34,7 +34,7 @@ export class TodoApiService {
 
   createTodo(payload: CreateTodoPayload): Observable<Todo> {
     const newTodo: Todo = {
-      id: `${Date.now()}`,
+      id: this.generateTodoId(),
       title: payload.title,
       completed: false,
       description: payload.description,
@@ -124,5 +124,14 @@ export class TodoApiService {
         return of(result);
       }),
     );
+  }
+
+  private generateTodoId(): Todo['id'] {
+    const lastTodo = this.todos().at(-1);
+    if (!lastTodo) {
+      return '1';
+    }
+
+    return `${parseInt(lastTodo.id) + 1}`;
   }
 }
