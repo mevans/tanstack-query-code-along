@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { Todo } from '../../types/todo.type';
 import {
   FormControl,
@@ -17,26 +17,26 @@ import { RouterLink } from '@angular/router';
 })
 export class TodoListComponent {
   // TODO - Query the todos
-  todos: Todo[] = [
+  todos = signal([
     {
-      id: 1,
+      id: '1',
       title: 'Buy milk',
       completed: false,
       description: 'Need to buy milk from the store',
     },
     {
-      id: 2,
+      id: '2',
       title: 'Buy eggs',
       completed: true,
       description: 'Need to buy eggs from the store',
     },
     {
-      id: 3,
+      id: '3',
       title: 'Buy bread',
       completed: false,
       description: 'Need to buy bread from the store',
     },
-  ];
+  ]);
 
   newTodoForm = new FormGroup({
     title: new FormControl('', Validators.required),

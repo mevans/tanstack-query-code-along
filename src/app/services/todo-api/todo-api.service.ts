@@ -16,7 +16,7 @@ export class TodoApiService {
     return this.simulateApiCall(this.todos());
   }
 
-  getTodoById(id: number): Observable<Todo> {
+  getTodoById(id: Todo['id']): Observable<Todo> {
     const todo = this.todos().find((todo) => todo.id === id);
     if (!todo) {
       return throwError(() => new Error(`Todo with id ${id} not found`));
@@ -27,7 +27,7 @@ export class TodoApiService {
 
   createTodo(payload: CreateTodoPayload): Observable<Todo> {
     const newTodo: Todo = {
-      id: this.todos().length + 1,
+      id: `${Date.now()}`,
       title: payload.title,
       completed: false,
       description: payload.description,
@@ -87,19 +87,19 @@ export class TodoApiService {
   private seedTodos(): void {
     this.todos.set([
       {
-        id: 1,
+        id: '1',
         title: 'Buy milk',
         completed: false,
         description: 'Need to buy milk from the store',
       },
       {
-        id: 2,
+        id: '2',
         title: 'Buy eggs',
         completed: true,
         description: 'Need to buy eggs from the store',
       },
       {
-        id: 3,
+        id: '3',
         title: 'Buy bread',
         completed: false,
         description: 'Need to buy bread from the store',

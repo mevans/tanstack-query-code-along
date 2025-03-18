@@ -1,7 +1,7 @@
 <h1 class="todo-list__header">Todos</h1>
 
 <ul class="todo-list">
-  @for (todo of todos; track todo) {
+  @for (todo of todos(); track todo.id) {
     <li class="todo-list__item">
       <a
         class="todo-list__item-title"
