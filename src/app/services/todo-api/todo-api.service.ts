@@ -20,10 +20,14 @@ export class TodoApiService {
   }
 
   getTodos(): Observable<SlimTodo[]> {
+    console.log('[TodoApiService] Fetching todos');
+
     return this.simulateApiCall(this.todos());
   }
 
   getTodoById(id: Todo['id']): Observable<Todo> {
+    console.log(`[TodoApiService] Fetching todo with id ${id}`);
+
     const todo = this.todos().find((todo) => todo.id === id);
     if (!todo) {
       return throwError(() => new Error(`Todo with id ${id} not found`));
@@ -33,6 +37,8 @@ export class TodoApiService {
   }
 
   createTodo(payload: CreateTodoPayload): Observable<Todo> {
+    console.log('[TodoApiService] Creating new todo', payload);
+
     const newTodo: Todo = {
       id: this.generateTodoId(),
       title: payload.title,
@@ -46,6 +52,8 @@ export class TodoApiService {
   }
 
   deleteTodoById(id: Todo['id']): Observable<null> {
+    console.log(`[TodoApiService] Deleting todo with id ${id}`);
+
     const todo = this.todos().find((todo) => todo.id === id);
     if (!todo) {
       return throwError(() => new Error(`Todo with id ${id} not found`));
@@ -57,6 +65,8 @@ export class TodoApiService {
   }
 
   markTodoAsCompleted(id: Todo['id']): Observable<Todo> {
+    console.log(`[TodoApiService] Marking todo with id ${id} as completed`);
+
     const todo = this.todos().find((todo) => todo.id === id);
     if (!todo) {
       return throwError(() => new Error(`Todo with id ${id} not found`));
@@ -75,6 +85,8 @@ export class TodoApiService {
   }
 
   markTodoAsIncomplete(id: Todo['id']): Observable<Todo> {
+    console.log(`[TodoApiService] Marking todo with id ${id} as incomplete`);
+
     const todo = this.todos().find((todo) => todo.id === id);
     if (!todo) {
       return throwError(() => new Error(`Todo with id ${id} not found`));
@@ -118,9 +130,11 @@ export class TodoApiService {
       switchMap((result) => {
         const shouldFail = Math.random() < 0.1;
         if (shouldFail) {
+          console.log(`[TodoApiService] API call failed`);
           return throwError(() => new Error('API call failed'));
         }
 
+        console.log(`[TodoApiService] API response`, result);
         return of(result);
       }),
     );
