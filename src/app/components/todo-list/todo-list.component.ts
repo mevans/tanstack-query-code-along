@@ -14,6 +14,8 @@ import {
 } from '@tanstack/angular-query-experimental';
 import { TodoApiService } from '../../services/todo-api/todo-api.service';
 import { lastValueFrom } from 'rxjs';
+import { TodoQueries } from '../../query/todo.queries';
+import { TodoMutations } from '../../query/todo.mutations';
 
 @Component({
   selector: 'app-todo-list',
@@ -23,35 +25,17 @@ import { lastValueFrom } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TodoListComponent {
-  private readonly apiService = inject(TodoApiService);
-  private readonly queryClient = inject(QueryClient);
+  private readonly queries = inject(TodoQueries);
+  private readonly mutations = inject(TodoMutations);
 
-  todosQuery = injectQuery(() => ({
-    queryFn: () => lastValueFrom(this.apiService.getTodos()),
-    queryKey: ['todos'],
-  }));
-
-  submitNewTodoMutation = injectMutation(() => ({
-    mutationFn: (payload: CreateTodoPayload) =>
-      lastValueFrom(this.apiService.createTodo(payload)),
-    onSuccess: (todo: Todo) => {
-      this.newTodoForm.reset();
-      this.queryClient.setQueryData(['todos'], (todos: Todo[]) => [
-        ...todos,
-        todo,
-      ]);
-    },
-  }));
-
-  markAsCompletedMutation = injectMutation(() => ({
-    mutationFn: ({ id }: { id: Todo['id'] }) =>
-      lastValueFrom(this.apiService.markTodoAsCompleted(id)),
-  }));
-
-  markAsIncompleteMutation = injectMutation(() => ({
-    mutationFn: ({ id }: { id: Todo['id'] }) =>
-      lastValueFrom(this.apiService.markTodoAsIncomplete(id)),
-  }));
+  todosQuery = injectQuery(() => this.queries.todoList());
+  submitNewTodoMutation = injectMutation(() => this.mutations.submitNew());
+  markAsCompletedMutation = injectMutation(() =>
+    this.mutations.markAsCompleted(),
+  );
+  markAsIncompleteMutation = injectMutation(() =>
+    this.mutations.markAsIncomplete(),
+  );
 
   newTodoForm = new FormGroup({
     title: new FormControl('', Validators.required),

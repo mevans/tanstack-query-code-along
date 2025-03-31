@@ -9,9 +9,9 @@ import {
   injectMutation,
   injectQuery,
 } from '@tanstack/angular-query-experimental';
-import { TodoApiService } from '../../services/todo-api/todo-api.service';
-import { lastValueFrom } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TodoMutations } from '../../query/todo.mutations';
+import { TodoQueries } from '../../query/todo.queries';
 
 @Component({
   selector: 'app-todo-detail',
@@ -21,31 +21,21 @@ import { ActivatedRoute, Router } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TodoDetailComponent {
-  private readonly apiService = inject(TodoApiService);
+  private readonly queries = inject(TodoQueries);
+  private readonly mutations = inject(TodoMutations);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
   id = input.required<Todo['id']>();
 
-  todoQuery = injectQuery(() => ({
-    queryKey: ['todo', this.id()],
-    queryFn: () => lastValueFrom(this.apiService.getTodoById(this.id())),
-  }));
-
-  deleteMutation = injectMutation(() => ({
-    mutationFn: ({ id }: { id: Todo['id'] }) =>
-      lastValueFrom(this.apiService.deleteTodoById(id)),
-  }));
-
-  markAsCompletedMutation = injectMutation(() => ({
-    mutationFn: ({ id }: { id: Todo['id'] }) =>
-      lastValueFrom(this.apiService.markTodoAsCompleted(id)),
-  }));
-
-  markAsIncompleteMutation = injectMutation(() => ({
-    mutationFn: ({ id }: { id: Todo['id'] }) =>
-      lastValueFrom(this.apiService.markTodoAsIncomplete(id)),
-  }));
+  todoQuery = injectQuery(() => this.queries.todoDetail({ id: this.id() }));
+  deleteMutation = injectMutation(() => this.mutations.deleteTodo());
+  markAsCompletedMutation = injectMutation(() =>
+    this.mutations.markAsCompleted(),
+  );
+  markAsIncompleteMutation = injectMutation(() =>
+    this.mutations.markAsIncomplete(),
+  );
 
   async onDelete(): Promise<void> {
     const sure = confirm(
