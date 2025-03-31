@@ -5,7 +5,10 @@ import {
   input,
 } from '@angular/core';
 import { Todo } from '../../types/todo.type';
-import { injectQuery } from '@tanstack/angular-query-experimental';
+import {
+  injectMutation,
+  injectQuery,
+} from '@tanstack/angular-query-experimental';
 import { TodoApiService } from '../../services/todo-api/todo-api.service';
 import { lastValueFrom } from 'rxjs';
 
@@ -26,15 +29,40 @@ export class TodoDetailComponent {
     queryFn: () => lastValueFrom(this.apiService.getTodoById(this.id())),
   }));
 
+  deleteMutation = injectMutation(() => ({
+    mutationFn: ({ id }: { id: Todo['id'] }) =>
+      lastValueFrom(this.apiService.deleteTodoById(id)),
+  }));
+
+  markAsCompletedMutation = injectMutation(() => ({
+    mutationFn: ({ id }: { id: Todo['id'] }) =>
+      lastValueFrom(this.apiService.markTodoAsCompleted(id)),
+  }));
+
+  markAsIncompleteMutation = injectMutation(() => ({
+    mutationFn: ({ id }: { id: Todo['id'] }) =>
+      lastValueFrom(this.apiService.markTodoAsIncomplete(id)),
+  }));
+
   onDelete(): void {
-    // TODO - Mutate and delete the todo
-    console.log('Delete todo:', this.id());
+    const sure = confirm(
+      'Are you sure you want to delete this todo? This action cannot be undone.',
+    );
+
+    if (!sure) {
+      return;
+    }
+
+    this.deleteMutation.mutate({ id: this.id() });
   }
 
   onToggle($event: Event): void {
     const checked = ($event.target as HTMLInputElement).checked;
 
-    // TODO - Mutate and toggle the todo
-    console.log('Toggle todo:', { id: this.id(), checked });
+    if (checked) {
+      this.markAsCompletedMutation.mutate({ id: this.id() });
+    } else {
+      this.markAsIncompleteMutation.mutate({ id: this.id() });
+    }
   }
 }

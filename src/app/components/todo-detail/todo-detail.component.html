@@ -10,7 +10,11 @@
 
     <h1 class="todo-detail__title">
       {{ todo.title }}
-      <input type="checkbox" (change)="onToggle($event)" />
+      <input
+        type="checkbox"
+        (change)="onToggle($event)"
+        [checked]="todo.completed"
+      />
     </h1>
 
     <p>{{ todo.description }}</p>
