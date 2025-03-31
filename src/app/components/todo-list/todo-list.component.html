@@ -23,7 +23,7 @@
 
           <input
             type="checkbox"
-            [checked]="todo.completed"
+            [appCheckboxValue]="todo.completed"
             (change)="onToggle(todo.id, $event)"
           />
         </li>

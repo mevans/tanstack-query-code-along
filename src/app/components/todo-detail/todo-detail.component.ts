@@ -12,10 +12,11 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { TodoMutations } from '../../query/todo.mutations';
 import { TodoQueries } from '../../query/todo.queries';
+import {CheckboxValueDirective} from '../../directives/checkbox-value/checkbox-value.directive';
 
 @Component({
   selector: 'app-todo-detail',
-  imports: [],
+  imports: [CheckboxValueDirective],
   templateUrl: './todo-detail.component.html',
   styleUrl: './todo-detail.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

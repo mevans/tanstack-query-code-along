@@ -13,10 +13,11 @@ import {
 } from '@tanstack/angular-query-experimental';
 import { TodoQueries } from '../../query/todo.queries';
 import { TodoMutations } from '../../query/todo.mutations';
+import {CheckboxValueDirective} from '../../directives/checkbox-value/checkbox-value.directive';
 
 @Component({
   selector: 'app-todo-list',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, CheckboxValueDirective],
   templateUrl: './todo-list.component.html',
   styleUrl: './todo-list.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
