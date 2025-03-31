@@ -12,7 +12,7 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { TodoMutations } from '../../query/todo.mutations';
 import { TodoQueries } from '../../query/todo.queries';
-import {CheckboxValueDirective} from '../../directives/checkbox-value/checkbox-value.directive';
+import { CheckboxValueDirective } from '../../directives/checkbox-value/checkbox-value.directive';
 
 @Component({
   selector: 'app-todo-detail',
@@ -56,12 +56,12 @@ export class TodoDetailComponent {
   }
 
   onToggle($event: Event): void {
-    const checked = ($event.target as HTMLInputElement).checked;
+    const currentlyChecked = ($event.target as HTMLInputElement).checked;
 
-    if (checked) {
-      this.markAsCompletedMutation.mutate({ id: this.id() });
-    } else {
+    if (currentlyChecked) {
       this.markAsIncompleteMutation.mutate({ id: this.id() });
+    } else {
+      this.markAsCompletedMutation.mutate({ id: this.id() });
     }
   }
 }

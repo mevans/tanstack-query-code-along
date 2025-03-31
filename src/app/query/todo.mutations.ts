@@ -38,6 +38,34 @@ export class TodoMutations {
     return mutationOptions({
       mutationFn: ({ id }: { id: Todo['id'] }) =>
         lastValueFrom(this.apiService.markTodoAsCompleted(id)),
+      onMutate: ({ id }) => {
+        this.queryClient.setQueryData(
+          this.queries.todoDetail({ id }).queryKey,
+          (todo) => (todo ? { ...todo, completed: true } : undefined),
+        );
+
+        this.queryClient.setQueryData(
+          this.queries.todoList().queryKey,
+          (todos) =>
+            todos?.map((todo) =>
+              todo.id === id ? { ...todo, completed: true } : todo,
+            ),
+        );
+      },
+      onError: (error, { id }) => {
+        this.queryClient.setQueryData(
+          this.queries.todoDetail({ id }).queryKey,
+          (todo) => (todo ? { ...todo, completed: false } : undefined),
+        );
+
+        this.queryClient.setQueryData(
+          this.queries.todoList().queryKey,
+          (todos) =>
+            todos?.map((todo) =>
+              todo.id === id ? { ...todo, completed: false } : todo,
+            ),
+        );
+      },
     });
   }
 
@@ -45,6 +73,34 @@ export class TodoMutations {
     return mutationOptions({
       mutationFn: ({ id }: { id: Todo['id'] }) =>
         lastValueFrom(this.apiService.markTodoAsIncomplete(id)),
+      onMutate: ({ id }) => {
+        this.queryClient.setQueryData(
+          this.queries.todoDetail({ id }).queryKey,
+          (todo) => (todo ? { ...todo, completed: false } : undefined),
+        );
+
+        this.queryClient.setQueryData(
+          this.queries.todoList().queryKey,
+          (todos) =>
+            todos?.map((todo) =>
+              todo.id === id ? { ...todo, completed: false } : todo,
+            ),
+        );
+      },
+      onError: (error, { id }) => {
+        this.queryClient.setQueryData(
+          this.queries.todoDetail({ id }).queryKey,
+          (todo) => (todo ? { ...todo, completed: true } : undefined),
+        );
+
+        this.queryClient.setQueryData(
+          this.queries.todoList().queryKey,
+          (todos) =>
+            todos?.map((todo) =>
+              todo.id === id ? { ...todo, completed: true } : todo,
+            ),
+        );
+      },
     });
   }
 

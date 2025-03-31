@@ -13,7 +13,7 @@ import {
 } from '@tanstack/angular-query-experimental';
 import { TodoQueries } from '../../query/todo.queries';
 import { TodoMutations } from '../../query/todo.mutations';
-import {CheckboxValueDirective} from '../../directives/checkbox-value/checkbox-value.directive';
+import { CheckboxValueDirective } from '../../directives/checkbox-value/checkbox-value.directive';
 
 @Component({
   selector: 'app-todo-list',
@@ -68,12 +68,12 @@ export class TodoListComponent {
   }
 
   onToggle(id: Todo['id'], $event: Event): void {
-    const checked = ($event.target as HTMLInputElement).checked;
+    const currentlyChecked = ($event.target as HTMLInputElement).checked;
 
-    if (checked) {
-      this.markAsCompletedMutation.mutate({ id });
-    } else {
+    if (currentlyChecked) {
       this.markAsIncompleteMutation.mutate({ id });
+    } else {
+      this.markAsCompletedMutation.mutate({ id });
     }
   }
 }
