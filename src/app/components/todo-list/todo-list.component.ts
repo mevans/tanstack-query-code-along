@@ -1,19 +1,16 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { CreateTodoPayload, Todo } from '../../types/todo.type';
+import { Todo } from '../../types/todo.type';
 import {
   FormControl,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   injectMutation,
   injectQuery,
-  QueryClient,
 } from '@tanstack/angular-query-experimental';
-import { TodoApiService } from '../../services/todo-api/todo-api.service';
-import { lastValueFrom } from 'rxjs';
 import { TodoQueries } from '../../query/todo.queries';
 import { TodoMutations } from '../../query/todo.mutations';
 
@@ -27,6 +24,8 @@ import { TodoMutations } from '../../query/todo.mutations';
 export class TodoListComponent {
   private readonly queries = inject(TodoQueries);
   private readonly mutations = inject(TodoMutations);
+  private readonly router = inject(Router);
+  private readonly activatedRoute = inject(ActivatedRoute);
 
   todosQuery = injectQuery(() => this.queries.todoList());
   submitNewTodoMutation = injectMutation(() => this.mutations.submitNew());
@@ -42,7 +41,7 @@ export class TodoListComponent {
     description: new FormControl('', Validators.required),
   });
 
-  onSubmitNewTodo(): void {
+  async onSubmitNewTodo(): Promise<void> {
     if (!this.newTodoForm.valid) {
       return;
     }
@@ -53,7 +52,18 @@ export class TodoListComponent {
       return;
     }
 
-    this.submitNewTodoMutation.mutate({ title, description });
+    try {
+      const newTodo = await this.submitNewTodoMutation.mutateAsync({
+        title,
+        description,
+      });
+
+      await this.router.navigate(['./', newTodo.id], {
+        relativeTo: this.activatedRoute,
+      });
+    } catch (error) {
+      alert('Failed to create todo. Please try again.');
+    }
   }
 
   onToggle(id: Todo['id'], $event: Event): void {

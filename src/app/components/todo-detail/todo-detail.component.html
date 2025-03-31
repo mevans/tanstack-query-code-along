@@ -17,7 +17,14 @@
       />
     </h1>
 
-    <p>{{ todo.description }}</p>
+    @if (!todoQuery.isPlaceholderData()) {
+      <p>{{ todo.description }}</p>
+    } @else {
+      <p>
+        Displaying 'placeholder data' stolen from the list view.. description
+        loading soon
+      </p>
+    }
 
     <button type="button" (click)="onDelete()">Delete</button>
   }

@@ -46,9 +46,12 @@ export class TodoDetailComponent {
       return;
     }
 
-    await this.deleteMutation.mutateAsync({ id: this.id() });
-
-    this.router.navigate(['..'], { relativeTo: this.route });
+    try {
+      await this.deleteMutation.mutateAsync({ id: this.id() });
+      await this.router.navigate(['..'], { relativeTo: this.route });
+    } catch (error) {
+      alert('Failed to delete todo. Please try again.');
+    }
   }
 
   onToggle($event: Event): void {
