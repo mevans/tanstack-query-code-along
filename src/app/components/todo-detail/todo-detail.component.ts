@@ -1,10 +1,13 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  inject,
   input,
-  numberAttribute,
 } from '@angular/core';
 import { Todo } from '../../types/todo.type';
+import { injectQuery } from '@tanstack/angular-query-experimental';
+import { TodoApiService } from '../../services/todo-api/todo-api.service';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-todo-detail',
@@ -14,8 +17,14 @@ import { Todo } from '../../types/todo.type';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TodoDetailComponent {
+  private readonly apiService = inject(TodoApiService);
+
   id = input.required<Todo['id']>();
-  // TODO - Query and get the todo by the id
+
+  todoQuery = injectQuery(() => ({
+    queryKey: ['todo', this.id()],
+    queryFn: () => lastValueFrom(this.apiService.getTodoById(this.id())),
+  }));
 
   onDelete(): void {
     // TODO - Mutate and delete the todo

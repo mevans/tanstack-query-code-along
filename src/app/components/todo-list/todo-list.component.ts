@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { Todo } from '../../types/todo.type';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { CreateTodoPayload, Todo } from '../../types/todo.type';
 import {
   FormControl,
   FormGroup,
@@ -7,7 +7,13 @@ import {
   Validators,
 } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { mockTodos } from '../../constants/mock-todos.constant';
+import {
+  injectMutation,
+  injectQuery,
+  QueryClient,
+} from '@tanstack/angular-query-experimental';
+import { TodoApiService } from '../../services/todo-api/todo-api.service';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-todo-list',
@@ -17,8 +23,25 @@ import { mockTodos } from '../../constants/mock-todos.constant';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TodoListComponent {
-  // TODO - Query the todos
-  todos = signal(mockTodos);
+  private readonly apiService = inject(TodoApiService);
+  private readonly queryClient = inject(QueryClient);
+
+  todosQuery = injectQuery(() => ({
+    queryFn: () => lastValueFrom(this.apiService.getTodos()),
+    queryKey: ['todos'],
+  }));
+
+  submitNewTodoMutation = injectMutation(() => ({
+    mutationFn: (payload: CreateTodoPayload) =>
+      lastValueFrom(this.apiService.createTodo(payload)),
+    onSuccess: (todo: Todo) => {
+      this.newTodoForm.reset();
+      this.queryClient.setQueryData(['todos'], (todos: Todo[]) => [
+        ...todos,
+        todo,
+      ]);
+    },
+  }));
 
   newTodoForm = new FormGroup({
     title: new FormControl('', Validators.required),
@@ -32,8 +55,11 @@ export class TodoListComponent {
 
     const { title, description } = this.newTodoForm.value;
 
-    // TODO - Mutate and add a new todo
-    console.log('New todo:', { title, description });
+    if (!title || !description) {
+      return;
+    }
+
+    this.submitNewTodoMutation.mutate({ title, description });
   }
 
   onToggle(id: Todo['id'], $event: Event): void {

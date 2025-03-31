@@ -1,8 +1,20 @@
-<h1 class="todo-detail__title">
-  Todo name
-  <input type="checkbox" (change)="onToggle($event)" />
-</h1>
+@switch (todoQuery.status()) {
+  @case ("pending") {
+    <p>Loading...</p>
+  }
+  @case ("error") {
+    <p>There was an error loading the todo</p>
+  }
+  @case ("success") {
+    @let todo = todoQuery.data()!;
 
-<p>Todo description</p>
+    <h1 class="todo-detail__title">
+      {{ todo.title }}
+      <input type="checkbox" (change)="onToggle($event)" />
+    </h1>
 
-<button type="button" (click)="onDelete()">Delete</button>
+    <p>{{ todo.description }}</p>
+
+    <button type="button" (click)="onDelete()">Delete</button>
+  }
+}
