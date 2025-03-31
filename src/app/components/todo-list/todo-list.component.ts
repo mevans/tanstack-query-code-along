@@ -43,6 +43,16 @@ export class TodoListComponent {
     },
   }));
 
+  markAsCompletedMutation = injectMutation(() => ({
+    mutationFn: ({ id }: { id: Todo['id'] }) =>
+      lastValueFrom(this.apiService.markTodoAsCompleted(id)),
+  }));
+
+  markAsIncompleteMutation = injectMutation(() => ({
+    mutationFn: ({ id }: { id: Todo['id'] }) =>
+      lastValueFrom(this.apiService.markTodoAsIncomplete(id)),
+  }));
+
   newTodoForm = new FormGroup({
     title: new FormControl('', Validators.required),
     description: new FormControl('', Validators.required),
@@ -65,7 +75,10 @@ export class TodoListComponent {
   onToggle(id: Todo['id'], $event: Event): void {
     const checked = ($event.target as HTMLInputElement).checked;
 
-    // TODO - Mutate and toggle the todo
-    console.log('Toggle todo:', { id, checked });
+    if (checked) {
+      this.markAsCompletedMutation.mutate({ id });
+    } else {
+      this.markAsIncompleteMutation.mutate({ id });
+    }
   }
 }
