@@ -11,6 +11,7 @@ import {
 } from '@tanstack/angular-query-experimental';
 import { TodoApiService } from '../../services/todo-api/todo-api.service';
 import { lastValueFrom } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-todo-detail',
@@ -21,6 +22,8 @@ import { lastValueFrom } from 'rxjs';
 })
 export class TodoDetailComponent {
   private readonly apiService = inject(TodoApiService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   id = input.required<Todo['id']>();
 
@@ -44,7 +47,7 @@ export class TodoDetailComponent {
       lastValueFrom(this.apiService.markTodoAsIncomplete(id)),
   }));
 
-  onDelete(): void {
+  async onDelete(): Promise<void> {
     const sure = confirm(
       'Are you sure you want to delete this todo? This action cannot be undone.',
     );
@@ -53,7 +56,9 @@ export class TodoDetailComponent {
       return;
     }
 
-    this.deleteMutation.mutate({ id: this.id() });
+    await this.deleteMutation.mutateAsync({ id: this.id() });
+
+    this.router.navigate(['..'], { relativeTo: this.route });
   }
 
   onToggle($event: Event): void {
